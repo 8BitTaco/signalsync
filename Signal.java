@@ -1,3 +1,4 @@
+package cs259signal;
 /**
  * A periodic signal of any sort with a range between -1.0 and 1.0 and a period of 1 second
  * Recall that 1 second is 1,000,000 microseconds 

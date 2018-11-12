@@ -1,3 +1,4 @@
+package cs259signal;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -6,6 +7,7 @@ import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.SourceDataLine;
 
 /**
  * This class contains methods that let you write signals out to .wav files
@@ -15,7 +17,24 @@ public class WaveIO {
 	public static final int BIT_DEPTH = 16; // Bits per sample
 	public static final int CHANNELS = 1; // Mono
 	public static final float MASTERING_VOLUME = 0.02f; // Volume to output sound at (outputting at max is too loud!)
+	public static final AudioFormat FORMAT = new AudioFormat((float)SAMPLE_RATE,BIT_DEPTH,CHANNELS,true,false); // Format to output audio at
 	private WaveIO() {} // Why did I do this?
+	/**
+	 * Writes the given samples fully to the source data line,
+	 * waiting until everything is output
+	 * @param sdl the source data line to write to (audio output)
+	 * @param bs input data
+	 */
+	public static void writeFully(SourceDataLine sdl,byte[] bs) {
+		int needle = 0;
+		int remain = bs.length;
+		while(remain > 0) {
+			int written = sdl.write(bs,needle,remain);
+			remain -= written;
+			needle += written;
+		}
+		sdl.drain();
+	}
 	/**
 	 * Outputs the given signal as an array of 16-bit signed sample bytes
 	 * @param s the input signal
@@ -73,8 +92,7 @@ public class WaveIO {
 		// Now output as WAV
 		ByteArrayInputStream bais = new ByteArrayInputStream(buffer);
 		File f = new File(filename);
-		AudioFormat af = new AudioFormat((float)SAMPLE_RATE,BIT_DEPTH,CHANNELS,true,false);
-		AudioInputStream ais = new AudioInputStream(bais,af,buffer.length);
+		AudioInputStream ais = new AudioInputStream(bais,FORMAT,buffer.length);
 		AudioSystem.write(ais,AudioFileFormat.Type.WAVE,f);
 		ais.close();
 	}

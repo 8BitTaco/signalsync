@@ -1,3 +1,4 @@
+package cs259signal;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -40,6 +41,8 @@ public class Inherit {
 		Square s3 = new Square(0.125f);
 		Sawtooth sw = new Sawtooth();
 		Triangle tr = new Triangle();
+		Modulator md = new Modulator(sw);
+		md.setPeriod(15);
 		
 		// Plot
 		PrintStream ps = new PrintStream(new FileOutputStream(new File("plot.csv")));
@@ -51,8 +54,9 @@ public class Inherit {
 			float s3x = s3.getSample(i);
 			float swx = sw.getSample(i);
 			float trx = tr.getSample(i);
+			float mdx = md.getSample(i);
 			
-			ps.println(i+","+s1x+","+s2x+","+s3x+","+swx+","+trx+";");
+			ps.println(i+","+s1x+","+s2x+","+s3x+","+swx+","+trx+","+mdx+";");
 		}
 		
 		// Done
